@@ -9,17 +9,21 @@ from selenium.webdriver.common.actions import interaction
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.pointer_input import PointerInput
 import os
+"""
+파이썬 스타일 가이드에서 권장하는 import 순서는 내부모듈 > 외부모듈 > 커스텀(직접 만든) 모듈입니다.
+권장이라 필수는 아니지만 권장 가이드라 준수하시는 것을 나중을 위해 추천드립니다.
+"""
 
-directory = "%s/" % os.getcwd()
+directory = "%s/" % os.getcwd()  # %s와 같은 방식으로 문자열을 만드시는 특별한 이유가 없으시다면 f-string formatting을 권장드립니다.
 file_name = "screenshot.png"
 
-@pytest.fixture
+@pytest.fixture  # fixture는 conftest.py로 옮겨주세요.
 def device(request):
     udid = request.config.getoption("--udid")
-    DEVICE = {"name": "current_device", "udid": udid, "appium_port": "4723"}
+    DEVICE = {"name": "current_device", "udid": udid, "appium_port": "4723"}  # DEVICE는 변수인가요? 상수인가요? 변수라면 변수명은 소문자로 작성 해주세요.
     return DEVICE
     
-@pytest.fixture
+@pytest.fixture  # fixture는 conftest.py로 옮겨주세요.
 def driver(device):
     options = UiAutomator2Options()
     options.platform_name = "Android"
@@ -35,14 +39,14 @@ def driver(device):
     options.new_command_timeout = 3600
 
     # 각 디바이스별 스크린샷 파일명 구분
-    global file_name
+    global file_name  # global 변수는 권장되지 않습니다.
     file_name = f"screenshot_{device['name']}.png"
 
     driver = webdriver.Remote(
         f"http://127.0.0.1:{device['appium_port']}", options=options
     )
 
-    try:
+    try:  # try 이후 except를 작성해서 예외처리가 필요할 것 같습니다.
         yield driver
     finally:
         driver.quit()
